@@ -1,0 +1,29 @@
+server:
+  port: 8000
+
+eureka:
+  client:
+    register-with-eureka: true
+    fetch-registry: true
+    service-url:
+      defaultZone: http://localhost:8761/eureka
+  instance:
+    instance-id: gateway-service-instance
+
+spring:
+  application:
+    name: gateway-service
+
+  cloud:
+    gateway:
+      routes:
+        - id: message-service # MicroService 식별자
+          uri: lb://MESSAGE-PLATFORM # 포워딩할 MicroService 호스트 정보
+          predicates:
+            - Path=/api/kafka/** # 라우트를 활성화 하기 위해 충족해야되는 조건들
+          filters:
+            - RewritePath=/api/kafka/(?<segment>.*),/v1/kafka/$\{segment} # MESSAGE-PLATFORM uri/v1/kafka/** 경로를 강제로 다시 작성하는 필터입니다.
+        - id: board-service
+          uri: lb://BOARD-SERVICE
+          predicates:
+            - Path=/board/**
