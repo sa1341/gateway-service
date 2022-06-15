@@ -26,4 +26,7 @@ spring:
         - id: board-service
           uri: lb://BOARD-SERVICE
           predicates:
-            - Path=/board/**
+            - Path=/api/v1/boards**
+          filters:
+            - RewritePath=/api/v1/boards(?<segment>.*),/api/v1/boards$\{segment} # BOARD-SERVICE uri /api/v1/boards** 경로를 강제로 다시 작성하는 필터입니다.
+
